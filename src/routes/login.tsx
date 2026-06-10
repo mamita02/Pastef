@@ -1,6 +1,7 @@
 import { Footer, Nav } from "@/components/sections";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
+import { login } from "@/lib/auth";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -492,13 +493,20 @@ function LoginPage() {
     return () => window.removeEventListener("scroll", onS);
   }, []);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+ const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    console.log("Connexion :", { phone, cardNumber });
+
     setTimeout(() => {
+      const user = login(phone, cardNumber);
+
+      if (user) {
+        window.location.href = "/dashboard";
+      } else {
+        alert("Numéro ou carte membre invalide.");
+      }
+
       setLoading(false);
-      alert("Connexion en cours...");
     }, 600);
   };
 
