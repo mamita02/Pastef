@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
 import { COLORS } from "@/lib/constants/colors";
+import { motion } from "framer-motion";
 
 /**
  * ═══════════════════════════════════════════════════════════════
