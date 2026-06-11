@@ -7,9 +7,9 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
+import { getUser, logout, type AuthUser } from "@/lib/auth";
 import { COLORS } from "@/lib/constants/colors";
 import { PILIERS } from "@/lib/data/piliers";
-import { getUser, logout, type AuthUser } from "@/lib/auth";
 
 /**
  * ═══════════════════════════════════════════════════════════════

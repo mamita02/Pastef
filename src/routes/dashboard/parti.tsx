@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useState } from "react";
 
+import PresenceMap from "@/components/map/PresenceMap";
+import { getUser } from "@/lib/auth";
 import { COLORS } from "@/lib/constants/colors";
 import { PILIERS } from "@/lib/data/piliers";
-import { getUser } from "@/lib/auth";
 
 export const Route = createFileRoute("/dashboard/parti")({
   component: PartiPage,
@@ -204,6 +205,23 @@ function PartiPage() {
         <StatChip icon="🏛️" value={totalCellules.toString()} label="Cellules actives" color="#2563EB" />
         <StatChip icon="🏆" value={`#${user?.rang ?? 42}`} label="Mon rang national" color="#D97706" />
         <StatChip icon="📊" value={`${user?.engagement ?? 87}%`} label="Mon engagement" color={COLORS.rouge} />
+      </div>
+
+      {/* Carte interactive — Présence des patriotes */}
+      <div style={{ marginBottom: 24, background: COLORS.blanc, borderRadius: 16, border: `1px solid ${COLORS.ligne}`, overflow: "hidden" }}>
+        <div style={{ padding: "16px 20px 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.5, color: "#999", marginBottom: 4 }}>CARTE INTERACTIVE</div>
+            <h3 style={{ fontSize: 16, fontWeight: 900, margin: 0 }}>🌍 Présence des patriotes dans le monde</h3>
+          </div>
+          <div style={{ fontSize: 12, color: "#888", textAlign: "right" }}>
+            <span style={{ fontWeight: 800, color: COLORS.vert, fontSize: 18 }}>{totalPatriotes.toLocaleString()}</span>
+            <br />patriotes · <span style={{ fontWeight: 700 }}>{totalCellules}</span> cellules
+          </div>
+        </div>
+        <div style={{ padding: "12px 20px 16px" }}>
+          <PresenceMap height={440} />
+        </div>
       </div>
 
       {/* Tabs */}
