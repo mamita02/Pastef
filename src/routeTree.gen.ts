@@ -9,15 +9,22 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PastefRouteImport } from './routes/pastef'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as DashboardTalentsRouteImport } from './routes/dashboard/talents'
 import { Route as DashboardPartiRouteImport } from './routes/dashboard/parti'
+import { Route as DashboardIntelligenceRouteImport } from './routes/dashboard/intelligence'
 import { Route as DashboardCodeveloppementRouteImport } from './routes/dashboard/codeveloppement'
 import { Route as DashboardAcademieRouteImport } from './routes/dashboard/academie'
 
+const PastefRoute = PastefRouteImport.update({
+  id: '/pastef',
+  path: '/pastef',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -48,6 +55,11 @@ const DashboardPartiRoute = DashboardPartiRouteImport.update({
   path: '/parti',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardIntelligenceRoute = DashboardIntelligenceRouteImport.update({
+  id: '/intelligence',
+  path: '/intelligence',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardCodeveloppementRoute =
   DashboardCodeveloppementRouteImport.update({
     id: '/codeveloppement',
@@ -64,8 +76,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
+  '/pastef': typeof PastefRoute
   '/dashboard/academie': typeof DashboardAcademieRoute
   '/dashboard/codeveloppement': typeof DashboardCodeveloppementRoute
+  '/dashboard/intelligence': typeof DashboardIntelligenceRoute
   '/dashboard/parti': typeof DashboardPartiRoute
   '/dashboard/talents': typeof DashboardTalentsRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -73,8 +87,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/pastef': typeof PastefRoute
   '/dashboard/academie': typeof DashboardAcademieRoute
   '/dashboard/codeveloppement': typeof DashboardCodeveloppementRoute
+  '/dashboard/intelligence': typeof DashboardIntelligenceRoute
   '/dashboard/parti': typeof DashboardPartiRoute
   '/dashboard/talents': typeof DashboardTalentsRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -84,8 +100,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
+  '/pastef': typeof PastefRoute
   '/dashboard/academie': typeof DashboardAcademieRoute
   '/dashboard/codeveloppement': typeof DashboardCodeveloppementRoute
+  '/dashboard/intelligence': typeof DashboardIntelligenceRoute
   '/dashboard/parti': typeof DashboardPartiRoute
   '/dashboard/talents': typeof DashboardTalentsRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -96,8 +114,10 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/login'
+    | '/pastef'
     | '/dashboard/academie'
     | '/dashboard/codeveloppement'
+    | '/dashboard/intelligence'
     | '/dashboard/parti'
     | '/dashboard/talents'
     | '/dashboard/'
@@ -105,8 +125,10 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/pastef'
     | '/dashboard/academie'
     | '/dashboard/codeveloppement'
+    | '/dashboard/intelligence'
     | '/dashboard/parti'
     | '/dashboard/talents'
     | '/dashboard'
@@ -115,8 +137,10 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/login'
+    | '/pastef'
     | '/dashboard/academie'
     | '/dashboard/codeveloppement'
+    | '/dashboard/intelligence'
     | '/dashboard/parti'
     | '/dashboard/talents'
     | '/dashboard/'
@@ -126,10 +150,18 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   LoginRoute: typeof LoginRoute
+  PastefRoute: typeof PastefRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/pastef': {
+      id: '/pastef'
+      path: '/pastef'
+      fullPath: '/pastef'
+      preLoaderRoute: typeof PastefRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -172,6 +204,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardPartiRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/intelligence': {
+      id: '/dashboard/intelligence'
+      path: '/intelligence'
+      fullPath: '/dashboard/intelligence'
+      preLoaderRoute: typeof DashboardIntelligenceRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/codeveloppement': {
       id: '/dashboard/codeveloppement'
       path: '/codeveloppement'
@@ -192,6 +231,7 @@ declare module '@tanstack/react-router' {
 interface DashboardRouteChildren {
   DashboardAcademieRoute: typeof DashboardAcademieRoute
   DashboardCodeveloppementRoute: typeof DashboardCodeveloppementRoute
+  DashboardIntelligenceRoute: typeof DashboardIntelligenceRoute
   DashboardPartiRoute: typeof DashboardPartiRoute
   DashboardTalentsRoute: typeof DashboardTalentsRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
@@ -200,6 +240,7 @@ interface DashboardRouteChildren {
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAcademieRoute: DashboardAcademieRoute,
   DashboardCodeveloppementRoute: DashboardCodeveloppementRoute,
+  DashboardIntelligenceRoute: DashboardIntelligenceRoute,
   DashboardPartiRoute: DashboardPartiRoute,
   DashboardTalentsRoute: DashboardTalentsRoute,
   DashboardIndexRoute: DashboardIndexRoute,
@@ -213,6 +254,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
   LoginRoute: LoginRoute,
+  PastefRoute: PastefRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

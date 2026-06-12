@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import {
+  AIChatbot,
   Classement,
   Footer,
   Hero,
@@ -79,8 +80,8 @@ function Landing() {
       <Classement />
       <UpcomingEvents />
       <Footer />
-
       <WhatsApp />
+      <AIChatbot />  {/* ← AJOUTER */}
     </div>
   );
 }

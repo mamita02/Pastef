@@ -24,4 +24,4 @@ export * from "./President";
 export * from "./UpcomingEvents";
 export * from "./Valeurs";
 export * from "./WhatsApp";
-
+export * from "./AIChatbot";

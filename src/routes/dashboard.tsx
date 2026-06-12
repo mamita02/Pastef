@@ -43,6 +43,13 @@ const NAV_ITEMS = [
     color: COLORS.noir,
   },
   {
+    to: "/dashboard/intelligence",
+    label: "Intelligence IA",
+    icon: "🤖",
+    color: "#7C3AED",
+    tag: "AI",
+  },
+  {
     to: "/dashboard/talents",
     label: "Talents & Marchés",
     icon: PILIERS[0].icon,
