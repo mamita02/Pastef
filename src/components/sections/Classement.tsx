@@ -1,7 +1,7 @@
+import { PatrioteCard } from "@/components/shared/PatrioteCard";
 import { COLORS } from "@/lib/constants/colors";
 import { PATRIOTES } from "@/lib/data/patriotes";
-import { PatrioteCard } from "@/components/shared/PatrioteCard";
-
+import { useState } from "react";
 /**
  * ═══════════════════════════════════════════════════════════════
  *  Classement — Carrousel "Top Patriotes"
@@ -23,7 +23,9 @@ import { PatrioteCard } from "@/components/shared/PatrioteCard";
  * ═══════════════════════════════════════════════════════════════
  */
 
+
 export function Classement() {
+  const [selectedPatriote, setSelectedPatriote] = useState<any>(null);
   return (
     <section
       id="classement"
@@ -102,13 +104,171 @@ export function Classement() {
         {/* Piste — on duplique le tableau pour un loop sans saut */}
         <div
           className="carousel-track"
-          style={{ display: "flex", gap: 20, width: "fit-content" }}
+          style={{ display: "flex", gap: 32, width: "fit-content" }}
         >
           {[...PATRIOTES, ...PATRIOTES].map((p, i) => (
-            <PatrioteCard key={i} p={p} />
+                  <div
+        key={i}
+        onClick={() => setSelectedPatriote(p)}
+        style={{
+          cursor: "pointer",
+        }}
+      >
+        <PatrioteCard p={p} />
+      </div>
           ))}
         </div>
       </div>
+      {selectedPatriote && (
+  <div
+    onClick={() => setSelectedPatriote(null)}
+    style={{
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,0.7)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 9999,
+      padding: 20,
+    }}
+  >
+    <div
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        width: "100%",
+        maxWidth: 700,
+        background: "#fff",
+        borderRadius: 24,
+        overflow: "hidden",
+        boxShadow: "0 40px 100px rgba(0,0,0,0.3)",
+      }}
+    >
+      {/* Photo */}
+      <div
+        style={{
+          height: 260,
+          overflow: "hidden",
+        }}
+      >
+        <img
+          src={selectedPatriote.photo}
+          alt={selectedPatriote.nom}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+          }}
+        />
+      </div>
+
+      <div
+        style={{
+          padding: 32,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 20,
+          }}
+        >
+          <h2
+            style={{
+              margin: 0,
+              color: COLORS.noir,
+            }}
+          >
+            {selectedPatriote.nom}
+          </h2>
+
+          <div
+            style={{
+              background: COLORS.vert,
+              color: "#fff",
+              padding: "8px 14px",
+              borderRadius: 999,
+              fontWeight: 700,
+            }}
+          >
+            #{selectedPatriote.classement}
+          </div>
+        </div>
+
+        <div
+          style={{
+            color: COLORS.rouge,
+            fontWeight: 700,
+            marginBottom: 15,
+          }}
+        >
+          {selectedPatriote.fonction}
+        </div>
+
+        <div
+          style={{
+            fontStyle: "italic",
+            fontSize: 18,
+            marginBottom: 20,
+            color: COLORS.vert,
+          }}
+        >
+          "{selectedPatriote.slogan}"
+        </div>
+
+        <div
+          style={{
+            lineHeight: 1.8,
+            color: "#444",
+            marginBottom: 24,
+          }}
+        >
+          {selectedPatriote.oeuvre}
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            gap: 12,
+            flexWrap: "wrap",
+          }}
+        >
+          {selectedPatriote.linkedin && (
+            <a
+              href={selectedPatriote.linkedin}
+              target="_blank"
+              rel="noreferrer"
+            >
+              LinkedIn
+            </a>
+          )}
+
+          {selectedPatriote.twitter && (
+            <a
+              href={selectedPatriote.twitter}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Twitter
+            </a>
+          )}
+
+          {selectedPatriote.facebook && (
+            <a
+              href={selectedPatriote.facebook}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Facebook
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+)}
     </section>
   );
 }

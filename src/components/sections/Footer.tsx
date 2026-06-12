@@ -50,36 +50,33 @@ export function Footer() {
         }}
       >
         {/* ═══ Col 1 — Branding ═══ */}
-        <div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-              marginBottom: 16,
-            }}
-          >
-            <div
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 12,
-                background: `linear-gradient(135deg, ${COLORS.vert}, ${COLORS.rouge})`,
-                display: "grid",
-                placeItems: "center",
-                color: "#fff",
-                fontWeight: 900,
-              }}
-            >
-              P
-            </div>
-            <div style={{ color: "#fff", fontWeight: 900 }}>PASTEF</div>
-          </div>
-          <p style={{ fontSize: 13, lineHeight: 1.6 }}>
-            Patriotes Africains du Sénégal pour le Travail, l'Éthique et la
-            Fraternité.
-          </p>
-        </div>
+        {/* ═══ Col 1 — Branding ═══ */}
+<div>
+  <img
+    src="/images/Logo.jpg"
+    alt="PASTEF"
+    style={{
+      height: 100,
+      width: "auto",
+      objectFit: "contain",
+      marginBottom: 16,
+      filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.25))",
+      
+
+    }}
+  />
+
+  <p
+    style={{
+      fontSize: 13,
+      lineHeight: 1.7,
+      maxWidth: 280,
+    }}
+  >
+    Patriotes Africains du Sénégal pour le Travail, l'Éthique et la
+    Fraternité.
+  </p>
+</div>
 
         {/* ═══ Col 2 — Les 4 piliers ═══ */}
         <div>

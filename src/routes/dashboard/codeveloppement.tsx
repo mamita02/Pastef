@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { motion, AnimatePresence } from "framer-motion";
-import { useState, useMemo } from "react";
-
+import { AnimatePresence, motion } from "framer-motion";
+import { useMemo, useState } from "react";
+// Après les autres imports, AJOUTE :
+import PresenceMap from "@/components/map/PresenceMap";
+import { getUser } from "@/lib/auth";
 import { COLORS } from "@/lib/constants/colors";
 import { PILIERS } from "@/lib/data/piliers";
-import { getUser } from "@/lib/auth";
 
 export const Route = createFileRoute("/dashboard/codeveloppement")({
   component: CoDevPage,
@@ -436,33 +437,146 @@ function CoDevPage() {
 
       {/* ═══ TAB: DIASPORA ═══ */}
       {activeTab === "diaspora" && (
-        <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            {/* Carte Sénégal */}
-            <div style={{ background: COLORS.blanc, borderRadius: 16, border: `1px solid ${COLORS.ligne}`, padding: 20, marginBottom: 20 }}>
-              <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.5, color: "#999", marginBottom: 14 }}>CARTE DES PROJETS PAR RÉGION</div>
-              <SenegalMapSVG hovered={hoveredRegion} onHover={setHoveredRegion} />
-              <div style={{ display: "flex", gap: 16, marginTop: 14, justifyContent: "center", fontSize: 11, color: "#888" }}>
-                <span><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, background: COLORS.vert, marginRight: 4 }} />Forte activité</span>
-                <span><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, background: "#D97706", marginRight: 4 }} />Moyenne</span>
-                <span><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, background: COLORS.rouge, marginRight: 4 }} />À développer</span>
-              </div>
-            </div>
-
-            {/* Grille villes diaspora */}
-            <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.5, color: "#999", marginBottom: 12 }}>PRÉSENCE DIASPORA — {DIASPORA_CITIES.length} VILLES · {totalDiaspora.toLocaleString()} PATRIOTES</div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: 12 }}>
-              {DIASPORA_CITIES.sort((a, b) => b.membres - a.membres).map((c) => (
-                <DiasporaCard key={c.ville} city={c} selected={selectedDiaspora?.ville === c.ville} onClick={() => setSelectedDiaspora(selectedDiaspora?.ville === c.ville ? null : c)} />
-              ))}
+  <div>
+    {/* ═══ Carte interactive ═══ */}
+    <div style={{ position: "relative", background: COLORS.blanc, borderRadius: 20, border: `1px solid ${COLORS.ligne}`, overflow: "hidden", marginBottom: 28 }}>
+      {/* Motifs africains */}
+      {["left", "right"].map((side) => (
+        <div key={side} style={{
+          position: "absolute", [side]: 0, top: 0, bottom: 0, width: 50,
+          backgroundImage: "url(/images/pattern-sn.png)", backgroundSize: "50px auto",
+          backgroundRepeat: "repeat-y", opacity: 0.1, zIndex: 1, pointerEvents: "none",
+          transform: side === "left" ? "scaleX(-1)" : "none",
+        }} />
+      ))}
+      <div style={{ padding: "24px 28px 0", position: "relative", zIndex: 2 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 2, color: COLORS.vert, marginBottom: 4 }}>CARTE INTERACTIVE</div>
+            <h3 style={{ fontSize: 18, fontWeight: 900, margin: 0, color: COLORS.noir }}>🗺️ Projets & Présence territoriale</h3>
+            <p style={{ fontSize: 12, color: "#888", margin: "6px 0 0" }}>Zoomez pour explorer les régions, communes et cellules.</p>
+          </div>
+          <div style={{ textAlign: "right" }}>
+            <div style={{ fontSize: 24, fontWeight: 900, color: COLORS.vert }}>{MOCK_PROJECTS.length}</div>
+            <div style={{ fontSize: 11, color: "#888" }}>projets actifs</div>
+          </div>
+        </div>
+      </div>
+      <div style={{ padding: "16px 24px 20px", position: "relative", zIndex: 2 }}>
+        <PresenceMap height={460} />
+      </div>
+      <div style={{ display: "flex", gap: 20, padding: "0 28px 20px", justifyContent: "center", position: "relative", zIndex: 2 }}>
+        {[
+          { icon: "🗺️", val: "14/14", label: "Régions", c: COLORS.vert },
+          { icon: "🚀", val: MOCK_PROJECTS.filter(p => p.status === "en_cours").length.toString(), label: "En cours", c: "#D97706" },
+          { icon: "✅", val: MOCK_PROJECTS.filter(p => p.status === "finance" || p.status === "termine").length.toString(), label: "Financés", c: "#059669" },
+          { icon: "🌍", val: DIASPORA_CITIES.length.toString(), label: "Villes diaspora", c: "#D97706" },
+        ].map((s, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ fontSize: 15 }}>{s.icon}</span>
+            <div>
+              <div style={{ fontSize: 16, fontWeight: 900, color: s.c, lineHeight: 1 }}>{s.val}</div>
+              <div style={{ fontSize: 10, color: "#888", fontWeight: 600 }}>{s.label}</div>
             </div>
           </div>
+        ))}
+      </div>
+    </div>
 
-          <AnimatePresence>
-            {selectedDiaspora && <DiasporaDetail city={selectedDiaspora} onClose={() => setSelectedDiaspora(null)} />}
-          </AnimatePresence>
+    {/* ═══ Diaspora — Titre avec motif ═══ */}
+    <div style={{ position: "relative", background: `linear-gradient(135deg, #D97706 0%, #B8750A 100%)`, borderRadius: 16, padding: "24px 28px", marginBottom: 20, overflow: "hidden" }}>
+      {/* Motif en fond */}
+      <div style={{ position: "absolute", inset: 0, backgroundImage: "url(/images/pattern-sn.png)", backgroundSize: "80px auto", backgroundRepeat: "repeat", opacity: 0.06, pointerEvents: "none" }} />
+      <div style={{ position: "relative", zIndex: 2, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+        <div>
+          <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 3, color: "rgba(255,255,255,0.7)", marginBottom: 6 }}>PRÉSENCE DIASPORA</div>
+          <h2 style={{ fontSize: 22, fontWeight: 900, color: "#fff", margin: 0 }}>
+            {DIASPORA_CITIES.length} villes · {totalDiaspora.toLocaleString()} patriotes
+          </h2>
         </div>
-      )}
+        <div style={{ display: "flex", gap: 20 }}>
+          {[
+            { val: formatCFA(DIASPORA_CITIES.reduce((s, c) => s + c.contributions, 0)), label: "Contributions/mois", icon: "💰" },
+            { val: DIASPORA_CITIES.reduce((s, c) => s + c.projetsFinances, 0).toString(), label: "Projets financés", icon: "🚀" },
+          ].map((s, i) => (
+            <div key={i} style={{ textAlign: "center" }}>
+              <div style={{ fontSize: 18, fontWeight: 900, color: "#fff" }}>{s.icon} {s.val}</div>
+              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.7)", fontWeight: 600 }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    {/* ═══ Top 4 — Grandes cartes ═══ */}
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 16 }}>
+      {DIASPORA_CITIES.slice(0, 4).map((c, i) => (
+        <motion.div key={c.ville} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }} whileHover={{ y: -4, boxShadow: `0 12px 32px #D9770622` }}
+          onClick={() => setSelectedDiaspora(selectedDiaspora?.ville === c.ville ? null : c)}
+          style={{
+            background: COLORS.blanc, borderRadius: 16, overflow: "hidden", cursor: "pointer",
+            border: selectedDiaspora?.ville === c.ville ? "2px solid #D97706" : `1px solid ${COLORS.ligne}`,
+            transition: "all 0.2s",
+          }}>
+          {/* Bandeau doré */}
+          <div style={{ height: 4, background: "linear-gradient(90deg, #D97706, #E8B847)" }} />
+          <div style={{ padding: "18px 18px 16px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: "linear-gradient(135deg, #D97706, #E8B847)", color: "#fff", display: "grid", placeItems: "center", fontWeight: 900, fontSize: 18, boxShadow: "0 4px 14px #D9770644" }}>
+                {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "🔥"}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 16, fontWeight: 900, color: COLORS.noir }}>{c.ville}</div>
+                <div style={{ fontSize: 11, color: "#888", fontWeight: 600 }}>{c.pays}</div>
+              </div>
+            </div>
+            <div style={{ fontSize: 28, fontWeight: 900, color: "#D97706", marginBottom: 4, letterSpacing: -1 }}>{c.membres.toLocaleString()}</div>
+            <div style={{ fontSize: 11, color: "#888", fontWeight: 600, marginBottom: 12 }}>patriotes actifs</div>
+            <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0 0", borderTop: `1px solid ${COLORS.ligne}`, fontSize: 11, fontWeight: 700, color: "#666" }}>
+              <span>💰 {formatCFA(c.contributions)}/mois</span>
+              <span>🚀 {c.projetsFinances} projets</span>
+            </div>
+          </div>
+        </motion.div>
+      ))}
+    </div>
+
+    {/* ═══ Reste — Grille compacte ═══ */}
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+      {DIASPORA_CITIES.slice(4).map((c, i) => (
+        <motion.div key={c.ville} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + i * 0.03 }} whileHover={{ y: -2, borderColor: "#D97706" }}
+          onClick={() => setSelectedDiaspora(selectedDiaspora?.ville === c.ville ? null : c)}
+          style={{
+            background: COLORS.blanc, borderRadius: 12, padding: "14px 16px", cursor: "pointer",
+            border: selectedDiaspora?.ville === c.ville ? "2px solid #D97706" : `1px solid ${COLORS.ligne}`,
+            display: "flex", alignItems: "center", gap: 12, transition: "all 0.15s",
+          }}>
+          <div style={{ width: 38, height: 38, borderRadius: 10, background: "#D9770615", color: "#D97706", display: "grid", placeItems: "center", fontWeight: 800, fontSize: 11, flexShrink: 0 }}>
+            {c.ville.slice(0, 2)}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: COLORS.noir }}>{c.ville}</div>
+              <div style={{ fontSize: 15, fontWeight: 900, color: "#D97706" }}>{c.membres.toLocaleString()}</div>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
+              <span style={{ fontSize: 11, color: "#888" }}>{c.pays}</span>
+              <div style={{ display: "flex", gap: 10, fontSize: 10, color: "#999", fontWeight: 600 }}>
+                <span>💰 {formatCFA(c.contributions)}</span>
+                <span>🚀 {c.projetsFinances}</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      ))}
+    </div>
+
+    {/* Panel détail diaspora */}
+    <AnimatePresence>
+      {selectedDiaspora && <DiasporaDetail city={selectedDiaspora} onClose={() => setSelectedDiaspora(null)} />}
+    </AnimatePresence>
+  </div>
+)}
 
       {/* ═══ TAB: TRANSPARENCE ═══ */}
       {activeTab === "transparence" && <TransparenceTab projects={MOCK_PROJECTS} />}

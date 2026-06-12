@@ -1,6 +1,6 @@
-import { motion } from "framer-motion";
 import { COLORS } from "@/lib/constants/colors";
 import type { Patriote } from "@/lib/data/patriotes";
+import { motion } from "framer-motion";
 
 /**
  * ═══════════════════════════════════════════════════════════════
@@ -32,7 +32,7 @@ export function PatrioteCard({ p }: PatrioteCardProps) {
   return (
     <div
       style={{
-        flex: "0 0 300px",
+        flex: "0 0 240px",
         background: COLORS.blanc,
         border: `1px solid ${COLORS.ligne}`,
         borderRadius: 18,

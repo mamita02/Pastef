@@ -1,8 +1,9 @@
+
 import { COLORS } from "@/lib/constants/colors";
 import { PILIERS } from "@/lib/data/piliers";
+import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
 
 /**
  * ═══════════════════════════════════════════════════════════════
@@ -68,48 +69,35 @@ borderBottom: "1px solid rgba(255,255,255,0.08)",
         }}
       >
         {/* ═══ LOGO + Nom du parti ═══ */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <motion.div
-            whileHover={{ rotate: 360 }}
-            transition={{ duration: 0.6 }}
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 12,
-              background: `linear-gradient(135deg, ${COLORS.vert}, ${COLORS.rouge})`,
-              display: "grid",
-              placeItems: "center",
-              color: "#fff",
-              fontWeight: 900,
-              fontSize: 20,
-              boxShadow: `0 8px 24px ${COLORS.vert}44`,
-            }}
-          >
-            P
-          </motion.div>
-          <div>
-            <div
-              style={{
-                color: "#fff",
-                fontWeight: 900,
-                fontSize: 16,
-                letterSpacing: 1,
-              }}
-            >
-              PASTEF
-            </div>
-            <div
-              style={{
-                color: "rgba(255,255,255,0.6)",
-                fontSize: 10,
-                letterSpacing: 2,
-                fontWeight: 600,
-              }}
-            >
-              PATRIOTES DU SÉNÉGAL
-            </div>
-          </div>
-        </div>
+        {/* ═══ LOGO PASTEF ═══ */}
+<div
+  style={{
+    display: "flex",
+    alignItems: "center",
+  }}
+>
+  <a
+    href="#accueil"
+    style={{
+      display: "flex",
+      alignItems: "center",
+      textDecoration: "none",
+    }}
+  >
+    <motion.img
+      whileHover={{ scale: 1.03 }}
+      transition={{ duration: 0.2 }}
+      src="/images/logoPastef.png"
+      alt="PASTEF"
+      style={{
+        height: 60,
+        width: "auto",
+        objectFit: "contain",
+        filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.35))",
+      }}
+    />
+  </a>
+</div>
 
         {/* ═══ Liens + CTA ═══ */}
         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
