@@ -11,8 +11,10 @@ import type { Patriote } from "@/lib/data/patriotes";
  *  Design "premium" : photo en haut, infos structurées en bas,
  *  bande de motifs sénégalais sur le côté droit.
  *
- *  Largeur : 320px (≈ 6 cartes par écran sur desktop 1920px,
- *  4 par écran sur laptop 1440px).
+ *  Le champ `photo` accepte :
+ *    • une URL externe       — "https://..."
+ *    • un chemin local        — "/images/patriotes/xxx.jpg"
+ *    • des initiales          — "MD" (fallback si pas d'image)
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -23,11 +25,15 @@ type PatrioteCardProps = {
 export function PatrioteCard({ p }: PatrioteCardProps) {
   const isTop3 = (p.classement ?? 99) <= 3;
 
+  // Détection automatique : image (URL ou chemin local) ou initiales
+  const hasImage =
+    !!p.photo && (p.photo.startsWith("http") || p.photo.startsWith("/"));
+
   return (
     <div
       style={{
-         width: 400,           // ← largeur fixe explicite
-         flexShrink: 0,
+        width: 400,
+        flexShrink: 0,
         background: COLORS.blanc,
         border: `1px solid ${COLORS.ligne}`,
         borderRadius: 20,
@@ -57,12 +63,17 @@ export function PatrioteCard({ p }: PatrioteCardProps) {
           overflow: "hidden",
         }}
       >
-        {/* Photo de fond — si URL, sinon initiales */}
-        {p.photo && p.photo.startsWith("http") ? (
+        {/* Photo de fond — si URL/chemin local, sinon initiales */}
+        {hasImage ? (
           <img
             src={p.photo}
             alt={p.name}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "center top",
+            }}
           />
         ) : (
           <div
@@ -87,7 +98,8 @@ export function PatrioteCard({ p }: PatrioteCardProps) {
           style={{
             position: "absolute",
             inset: 0,
-            background: "linear-gradient(to bottom, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.4) 100%)",
+            background:
+              "linear-gradient(to bottom, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.4) 100%)",
             pointerEvents: "none",
           }}
         />
@@ -194,7 +206,16 @@ export function PatrioteCard({ p }: PatrioteCardProps) {
             fontWeight: 500,
           }}
         >
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="11"
+            height="11"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
             <circle cx="12" cy="10" r="3" />
           </svg>
@@ -226,7 +247,14 @@ export function PatrioteCard({ p }: PatrioteCardProps) {
             }}
           >
             {p.contribution}{" "}
-            <span style={{ fontSize: 11, color: "#999", fontWeight: 700, letterSpacing: 0.5 }}>
+            <span
+              style={{
+                fontSize: 11,
+                color: "#999",
+                fontWeight: 700,
+                letterSpacing: 0.5,
+              }}
+            >
               FCFA
             </span>
           </div>
