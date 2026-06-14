@@ -3,29 +3,36 @@ import { motion } from "framer-motion";
 
 /**
  * ═══════════════════════════════════════════════════════════════
- *  President — Hero "Vision & Action" sur fond vert profond
+ *  President — Section "Mot du Président"
  * ═══════════════════════════════════════════════════════════════
  *
- *  Le bouton "DÉCOUVRIR NOS ACTIONS" route vers /pastef
- *  (page publique de découverte du parti).
+ *  Design clair : photo à gauche sur cercle vert, citation à droite,
+ *  signature manuscrite + bouton vers /pastef, timeline 5 étapes en bas.
+ *
+ *  ⚠️ Photo : remplacer /public/images/Sonko.png par la nouvelle
+ *      (l'image carrée fournie). Le composant gère le cadrage.
  * ═══════════════════════════════════════════════════════════════
  */
 
-// ─── Couleurs hero ───
-const VERT_DEEP = "#0A4D2E";
-const VERT_DARK = "#073B23";
-const VERT_LIGHT = "#1B7F3E";
-const JAUNE = "#F4B400";
-const BLANC = "#FFFFFF";
-const BLANC_DOUX = "rgba(255,255,255,0.85)";
-const BLANC_SUBTIL = "rgba(255,255,255,0.6)";
+// ─── Couleurs ───
+const VERT = "#1B7F3E";
+const VERT_DEEP = "#0F4023";
+const ROUGE = "#C61C3E";
+const ROUGE_DEEP = "#8E1430";
+const NOIR = "#1A1A1A";
+const TEXTE = "#3A3A3A";
+const FOND = "#FAFAF7";
+const GRIS_DOUX = "#6B6B6B";
 
-// ─── Étapes clés ───
-const TIMELINE = [
-  { annee: "2014", label: "Création de PASTEF" },
-  { annee: "2017", label: "Députation à l'Assemblée" },
-  { annee: "2024", label: "Premier Ministre" },
-  { annee: "2026", label: "Plateforme Patriote" },
+// ─── Timeline 5 étapes (couleurs alternées vert / rouge) ───
+type IconName = "flag" | "building" | "pin" | "briefcase" | "users";
+
+const TIMELINE: { annee: string; label: string; color: string; icon: IconName }[] = [
+  { annee: "2014", label: "Fondation du parti PASTEF.",                                  color: VERT,  icon: "flag" },
+  { annee: "2017", label: "Élu député à l'Assemblée nationale.",                         color: ROUGE, icon: "building" },
+  { annee: "2022", label: "Élu maire de Ziguinchor.",                                    color: VERT,  icon: "pin" },
+  { annee: "2024", label: "Nommé Premier ministre du Sénégal après la présidentielle.",  color: ROUGE, icon: "briefcase" },
+  { annee: "2026", label: "Président de l'Assemblée nationale et du PASTEF.",            color: VERT,  icon: "users" },
 ];
 
 export function President() {
@@ -33,250 +40,368 @@ export function President() {
     <section
       id="president"
       style={{
-        background: `linear-gradient(135deg, ${VERT_DEEP} 0%, ${VERT_DARK} 100%)`,
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
+        background: FOND,
+        padding: "80px 40px 70px",
         position: "relative",
         overflow: "hidden",
-        padding: "60px 40px 40px",
       }}
     >
-      <BackgroundPattern />
+      {/* Motif décoratif (points subtils en haut-gauche) */}
+      <DotsPattern />
 
       <div
         style={{
-          maxWidth: 1500,
-          width: "100%",
+          maxWidth: 1400,
           margin: "0 auto",
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          alignItems: "center",
-          gap: 40,
-          flex: 1,
           position: "relative",
           zIndex: 2,
         }}
       >
-        {/* ─── COLONNE TEXTE ─── */}
-        <motion.div
-          initial={{ opacity: 0, x: -40 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              padding: "8px 18px",
-              borderRadius: 6,
-              background: "rgba(0,0,0,0.25)",
-              border: `1px solid rgba(255,255,255,0.15)`,
-              color: BLANC,
-              fontWeight: 700,
-              fontSize: 11,
-              letterSpacing: 2,
-              marginBottom: 32,
-              backdropFilter: "blur(10px)",
-            }}
-          >
-            VISION &amp; ACTION
-          </div>
-
-          <h1
-            style={{
-              fontSize: "clamp(40px, 4.5vw, 72px)",
-              fontWeight: 900,
-              lineHeight: 1.05,
-              letterSpacing: "-2px",
-              marginBottom: 28,
-              color: BLANC,
-            }}
-          >
-            Agir aujourd&rsquo;hui
-            <br />
-            pour <span style={{ color: JAUNE }}>changer</span>
-            <br />
-            <span style={{ color: JAUNE }}>demain.</span>
-          </h1>
-
-          <p
-            style={{
-              fontSize: 16,
-              lineHeight: 1.7,
-              color: BLANC_DOUX,
-              maxWidth: 480,
-              marginBottom: 36,
-            }}
-          >
-            Des idées claires, des actions concrètes pour un Sénégal
-            souverain, juste et prospère.
-          </p>
-
-          {/* ═══ BOUTON LINK vers /pastef ═══ */}
-          <Link
-            to="/pastef"
-            style={{
-              background: BLANC,
-              color: VERT_DEEP,
-              border: "none",
-              borderRadius: 8,
-              padding: "14px 26px",
-              fontSize: 12,
-              fontWeight: 800,
-              letterSpacing: 1.5,
-              textDecoration: "none",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 14,
-              boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
-              transition: "transform 0.2s, box-shadow 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-2px)";
-              e.currentTarget.style.boxShadow = "0 14px 36px rgba(0,0,0,0.3)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "none";
-              e.currentTarget.style.boxShadow = "0 10px 30px rgba(0,0,0,0.2)";
-            }}
-          >
-            DÉCOUVRIR NOS ACTIONS
-            <ArrowRight />
-          </Link>
-        </motion.div>
-
-        {/* ─── COLONNE PHOTO ─── */}
-        <motion.div
-          initial={{ opacity: 0, x: 40 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
+        {/* ═══════ BLOC HAUT : photo + texte ═══════ */}
+        <div
+          className="president-hero"
           style={{
-            display: "flex",
-            justifyContent: "flex-end",
+            display: "grid",
+            gridTemplateColumns: "minmax(0, 0.9fr) minmax(0, 1.1fr)",
+            gap: 60,
             alignItems: "center",
-            position: "relative",
+            marginBottom: 80,
           }}
         >
-          <div
+          {/* ─── PHOTO (gauche) — fondue avec l'arrière-plan ─── */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
             style={{
-              position: "absolute",
-              right: "10%",
-              top: "50%",
-              transform: "translateY(-50%)",
-              width: "60%",
-              height: "70%",
-              borderRadius: "50%",
-              background: `radial-gradient(circle, ${VERT_LIGHT}40 0%, transparent 70%)`,
-              filter: "blur(40px)",
-              pointerEvents: "none",
-            }}
-          />
-          <img
-            src="/images/Sonko.png"
-            alt="Ousmane Sonko, Premier Ministre du Sénégal"
-            style={{
-              width: "100%",
-              maxWidth: 720,
-              objectFit: "contain",
-              display: "block",
               position: "relative",
-              filter: "drop-shadow(0 30px 60px rgba(0,0,0,0.4))",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
             }}
-          />
-        </motion.div>
+          >
+            <img
+              src="/images/Sonko.png"
+              alt="Ousmane Sonko, Président de PASTEF"
+              style={{
+                width: "100%",
+                maxWidth: 520,
+                display: "block",
+                // Fondu radial doux : centre opaque, bords transparents
+                maskImage:
+                  "radial-gradient(ellipse 70% 75% at center, black 40%, rgba(0,0,0,0.6) 65%, transparent 92%)",
+                WebkitMaskImage:
+                  "radial-gradient(ellipse 70% 75% at center, black 40%, rgba(0,0,0,0.6) 65%, transparent 92%)",
+              }}
+            />
+          </motion.div>
+
+          {/* ─── TEXTE (droite) ─── */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            {/* Titre bicolore */}
+            <h2
+              style={{
+                fontSize: "clamp(42px, 5vw, 76px)",
+                fontWeight: 900,
+                lineHeight: 1.0,
+                margin: 0,
+                marginBottom: 16,
+                letterSpacing: -2,
+                fontFamily: "inherit",
+              }}
+            >
+              <span style={{ color: VERT, display: "block" }}>MOT DU</span>
+              <span style={{ color: ROUGE_DEEP, display: "block" }}>PRÉSIDENT</span>
+            </h2>
+
+            {/* Petite barre décorative vert + rouge */}
+            <div
+              style={{
+                display: "flex",
+                gap: 4,
+                marginBottom: 40,
+                width: 90,
+              }}
+            >
+              <div style={{ flex: 1, height: 3, background: VERT, borderRadius: 2 }} />
+              <div style={{ flex: 1, height: 3, background: ROUGE, borderRadius: 2 }} />
+            </div>
+
+            {/* Citation */}
+            <div style={{ position: "relative", maxWidth: 620, marginBottom: 38 }}>
+              {/* Guillemet ouvrant */}
+              <div
+                style={{
+                  fontSize: 64,
+                  fontFamily: "Georgia, 'Times New Roman', serif",
+                  color: VERT,
+                  lineHeight: 0.4,
+                  fontWeight: 900,
+                  marginBottom: 24,
+                  userSelect: "none",
+                }}
+                aria-hidden="true"
+              >
+                &ldquo;
+              </div>
+
+              <p
+                style={{
+                  fontSize: 17,
+                  lineHeight: 1.7,
+                  color: TEXTE,
+                  margin: 0,
+                  fontWeight: 500,
+                }}
+              >
+                Notre combat est celui d&rsquo;un Sénégal{" "}
+                <strong style={{ color: VERT, fontWeight: 800 }}>
+                  souverain, juste et prospère.
+                </strong>
+                <br />
+                Avec foi, travail et détermination, nous bâtirons le Sénégal que nous méritons.
+              </p>
+
+              {/* Guillemet fermant (positionné en bas à droite) */}
+              <div
+                style={{
+                  position: "absolute",
+                  right: -10,
+                  bottom: -34,
+                  fontSize: 64,
+                  fontFamily: "Georgia, 'Times New Roman', serif",
+                  color: VERT,
+                  lineHeight: 0.4,
+                  fontWeight: 900,
+                  userSelect: "none",
+                }}
+                aria-hidden="true"
+              >
+                &rdquo;
+              </div>
+            </div>
+
+            {/* Signature + Bouton */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 30,
+                flexWrap: "wrap",
+                marginTop: 24,
+              }}
+            >
+              {/* Signature manuscrite */}
+              <div>
+                <div
+                  style={{
+                    fontSize: 30,
+                    fontStyle: "italic",
+                    fontFamily:
+                      '"Dancing Script", "Brush Script MT", "Lucida Handwriting", "Apple Chancery", cursive',
+                    color: VERT,
+                    fontWeight: 600,
+                    lineHeight: 1,
+                    marginBottom: 6,
+                    letterSpacing: 0.3,
+                  }}
+                >
+                  Ousmane Sonko
+                </div>
+                <div
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    letterSpacing: 2.5,
+                    color: GRIS_DOUX,
+                  }}
+                >
+                  PRÉSIDENT DE PASTEF
+                </div>
+              </div>
+
+              {/* Bouton "DÉCOUVRIR LE PARTI" */}
+              <Link
+                to="/pastef"
+                style={{
+                  background: VERT_DEEP,
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 10,
+                  padding: "14px 26px 14px 14px",
+                  fontSize: 12,
+                  fontWeight: 800,
+                  letterSpacing: 1.5,
+                  textDecoration: "none",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 14,
+                  boxShadow: `0 8px 22px ${VERT_DEEP}55`,
+                  transition: "transform 0.2s, box-shadow 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                  e.currentTarget.style.boxShadow = `0 12px 28px ${VERT_DEEP}77`;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "none";
+                  e.currentTarget.style.boxShadow = `0 8px 22px ${VERT_DEEP}55`;
+                }}
+              >
+                {/* Cercle blanc avec flèche */}
+                <span
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: "50%",
+                    background: "#fff",
+                    color: VERT_DEEP,
+                    display: "grid",
+                    placeItems: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <ArrowRight size={13} />
+                </span>
+                DÉCOUVRIR LE PARTI
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* ═══════ TIMELINE BAS — 5 étapes ═══════ */}
+        <Chronologie />
       </div>
 
-      <Chronologie />
+      {/* Responsive */}
+      <style>{`
+        @media (max-width: 1024px) {
+          .president-hero {
+            grid-template-columns: 1fr !important;
+            gap: 40px !important;
+          }
+          .timeline-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 32px 20px !important;
+          }
+          .timeline-grid::before {
+            display: none !important;
+          }
+        }
+        @media (max-width: 560px) {
+          .timeline-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }
 
-// ─── Chronologie ───
+/* ═══════════════════════════════════════════════════════════════
+   CHRONOLOGIE
+   ═══════════════════════════════════════════════════════════════ */
+
 function Chronologie() {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: 0.3 }}
-      style={{
-        maxWidth: 1100,
-        width: "100%",
-        margin: "60px auto 20px",
-        position: "relative",
-        zIndex: 2,
-      }}
+      transition={{ duration: 0.6, delay: 0.2 }}
+      style={{ position: "relative" }}
     >
       <div
-        style={{
-          position: "absolute",
-          top: 32,
-          left: "8%",
-          right: "8%",
-          height: 2,
-          background: `linear-gradient(90deg, transparent 0%, ${JAUNE}80 50%, transparent 100%)`,
-          zIndex: 0,
-        }}
-      />
-
-      <div
+        className="timeline-grid"
         style={{
           display: "grid",
           gridTemplateColumns: `repeat(${TIMELINE.length}, 1fr)`,
+          gap: 24,
           position: "relative",
-          zIndex: 1,
         }}
       >
+        {/* Ligne horizontale fine entre les pastilles (desktop) */}
+        <TimelineConnector />
+
         {TIMELINE.map((etape, idx) => (
           <motion.div
             key={etape.annee}
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.4 + idx * 0.1 }}
+            transition={{ delay: 0.3 + idx * 0.08 }}
             style={{
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               textAlign: "center",
-              gap: 12,
+              gap: 14,
+              position: "relative",
+              zIndex: 2,
             }}
           >
+            {/* Pastille avec icône */}
             <div
               style={{
-                width: 14,
-                height: 14,
+                width: 56,
+                height: 56,
                 borderRadius: "50%",
-                background: JAUNE,
-                border: `3px solid ${VERT_DEEP}`,
-                boxShadow: `0 0 0 2px ${JAUNE}, 0 4px 12px ${JAUNE}60`,
-                marginTop: 24,
-              }}
-            />
-            <div
-              style={{
-                fontSize: 24,
-                fontWeight: 900,
-                color: BLANC,
-                letterSpacing: -1,
+                background: etape.color,
+                display: "grid",
+                placeItems: "center",
+                boxShadow: `0 6px 16px ${etape.color}55`,
+                border: "4px solid #fff",
               }}
             >
-              {etape.annee}
+              <TimelineIcon name={etape.icon} />
             </div>
-            <div
+
+            {/* Année + petite barre colorée */}
+            <div>
+              <div
+                style={{
+                  fontSize: 26,
+                  fontWeight: 900,
+                  color: NOIR,
+                  lineHeight: 1,
+                  letterSpacing: -0.8,
+                  marginBottom: 6,
+                }}
+              >
+                {etape.annee}
+              </div>
+              <div
+                style={{
+                  width: 28,
+                  height: 2.5,
+                  background: etape.color,
+                  margin: "0 auto",
+                  borderRadius: 1,
+                }}
+              />
+            </div>
+
+            {/* Description */}
+            <p
               style={{
-                fontSize: 12,
-                color: BLANC_SUBTIL,
-                fontWeight: 600,
-                maxWidth: 160,
-                lineHeight: 1.3,
+                fontSize: 13,
+                color: GRIS_DOUX,
+                fontWeight: 500,
+                lineHeight: 1.5,
+                margin: 0,
+                maxWidth: 200,
+                padding: "0 6px",
               }}
             >
               {etape.label}
-            </div>
+            </p>
           </motion.div>
         ))}
       </div>
@@ -284,81 +409,172 @@ function Chronologie() {
   );
 }
 
-// ─── Décorations SVG ───
-function BackgroundPattern() {
+/* ─── Ligne de connexion entre les pastilles ─── */
+function TimelineConnector() {
+  // On positionne 4 segments colorés entre les 5 pastilles
   return (
-    <>
-      <svg
-        style={{
-          position: "absolute",
-          right: -100,
-          bottom: -100,
-          width: 500,
-          height: 500,
-          opacity: 0.08,
-          pointerEvents: "none",
-          zIndex: 1,
-        }}
-        viewBox="0 0 500 500"
-      >
-        <circle cx="250" cy="250" r="240" fill="none" stroke="#fff" strokeWidth="1" />
-        <circle cx="250" cy="250" r="180" fill="none" stroke="#fff" strokeWidth="1" />
-        <circle cx="250" cy="250" r="120" fill="none" stroke="#fff" strokeWidth="1" />
-        <circle cx="250" cy="250" r="60" fill="none" stroke="#fff" strokeWidth="1" />
-      </svg>
-      <svg
-        style={{
-          position: "absolute",
-          right: 0,
-          top: 0,
-          width: 400,
-          height: 400,
-          opacity: 0.06,
-          pointerEvents: "none",
-          zIndex: 1,
-        }}
-        viewBox="0 0 400 400"
-      >
-        <path d="M 400 50 Q 200 150 0 100" fill="none" stroke="#fff" strokeWidth="1.5" />
-        <path d="M 400 100 Q 200 200 0 150" fill="none" stroke="#fff" strokeWidth="1.5" />
-        <path d="M 400 150 Q 200 250 0 200" fill="none" stroke="#fff" strokeWidth="1.5" />
-      </svg>
-      <svg
-        style={{
-          position: "absolute",
-          left: 40,
-          top: 200,
-          width: 120,
-          height: 120,
-          opacity: 0.1,
-          pointerEvents: "none",
-          zIndex: 1,
-        }}
-        viewBox="0 0 120 120"
-      >
-        {[0, 1, 2, 3, 4].map((row) =>
-          [0, 1, 2, 3, 4].map((col) => (
-            <circle
-              key={`${row}-${col}`}
-              cx={20 + col * 20}
-              cy={20 + row * 20}
-              r="1.5"
-              fill="#fff"
+    <div
+      style={{
+        position: "absolute",
+        top: 28,
+        left: 0,
+        right: 0,
+        height: 2,
+        display: "grid",
+        gridTemplateColumns: `repeat(${TIMELINE.length}, 1fr)`,
+        zIndex: 1,
+        pointerEvents: "none",
+      }}
+    >
+      {TIMELINE.map((etape, idx) => {
+        const isLast = idx === TIMELINE.length - 1;
+        if (isLast) return <div key={idx} />;
+        const next = TIMELINE[idx + 1];
+        return (
+          <div key={idx} style={{ position: "relative", display: "flex", alignItems: "center" }}>
+            {/* Demi-ligne droite depuis la pastille courante */}
+            <div
+              style={{
+                position: "absolute",
+                left: "50%",
+                right: 0,
+                height: 2,
+                background: `repeating-linear-gradient(90deg, ${etape.color} 0 4px, transparent 4px 8px)`,
+                opacity: 0.5,
+              }}
             />
-          )),
-        )}
-      </svg>
-    </>
+            {/* Demi-ligne gauche vers la pastille suivante (colorée next) */}
+            <div
+              style={{
+                position: "absolute",
+                left: "100%",
+                width: "50%",
+                height: 2,
+                background: `repeating-linear-gradient(90deg, ${next.color} 0 4px, transparent 4px 8px)`,
+                opacity: 0.5,
+              }}
+            />
+            {/* Petit cercle vide au milieu */}
+            <div
+              style={{
+                position: "absolute",
+                left: "100%",
+                top: "50%",
+                transform: "translate(-50%, -50%)",
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+                background: "#fff",
+                border: `1.5px solid ${etape.color}`,
+              }}
+            />
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
-function ArrowRight() {
+/* ═══════════════════════════════════════════════════════════════
+   ICÔNES TIMELINE
+   ═══════════════════════════════════════════════════════════════ */
+
+function TimelineIcon({ name }: { name: IconName }) {
+  const common = {
+    width: 24,
+    height: 24,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "#fff",
+    strokeWidth: 2.4 as const,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+  };
+  switch (name) {
+    case "flag":
+      return (
+        <svg {...common}>
+          <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+          <line x1="4" y1="22" x2="4" y2="15" />
+        </svg>
+      );
+    case "building":
+      return (
+        <svg {...common}>
+          <path d="M3 21h18" />
+          <path d="M4 21V8l8-5 8 5v13" />
+          <line x1="8" y1="21" x2="8" y2="12" />
+          <line x1="12" y1="21" x2="12" y2="12" />
+          <line x1="16" y1="21" x2="16" y2="12" />
+        </svg>
+      );
+    case "pin":
+      return (
+        <svg {...common}>
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+          <circle cx="12" cy="10" r="3" />
+        </svg>
+      );
+    case "briefcase":
+      return (
+        <svg {...common}>
+          <rect x="2" y="7" width="20" height="14" rx="2" />
+          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+        </svg>
+      );
+    case "users":
+      return (
+        <svg {...common}>
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+      );
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DÉCORATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+function DotsPattern() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+    <svg
+      style={{
+        position: "absolute",
+        left: 30,
+        top: 50,
+        width: 180,
+        height: 180,
+        pointerEvents: "none",
+        zIndex: 1,
+      }}
+      viewBox="0 0 180 180"
+    >
+      {Array.from({ length: 9 }).map((_, row) =>
+        Array.from({ length: 9 }).map((_, col) => (
+          <circle
+            key={`${row}-${col}`}
+            cx={10 + col * 20}
+            cy={10 + row * 20}
+            r="1.4"
+            fill="#B0B0B0"
+            opacity={0.55 - (row + col) * 0.025}
+          />
+        ))
+      )}
+    </svg>
+  );
+}
+
+function ArrowRight({ size = 14 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <path
         d="M5 12h14M13 5l7 7-7 7"
         stroke="currentColor"
-        strokeWidth="2.5"
+        strokeWidth="2.8"
         strokeLinecap="round"
         strokeLinejoin="round"
       />

@@ -31,7 +31,7 @@ const SN_RED = "#C8102E";
 
 // ─── Dimensions FAB (constantes au niveau module, hors composant) ───
 const FAB_SIZE = 52;
-const FAB_RIGHT = 28 + 60 + 12; // = 100 (28 marge + 60 WhatsApp + 12 gap)
+const FAB_RIGHT = 28; // = 100 (28 marge + 60 WhatsApp + 12 gap)
 
 type Message = {
   id: string;

@@ -12,7 +12,6 @@ import {
   Piliers,
   President,
   Valeurs,
-  WhatsApp,
 } from "@/components/sections";
 import { UpcomingEvents } from "@/components/sections/UpcomingEvents";
 import { COLORS } from "@/lib/constants/colors";
@@ -81,7 +80,6 @@ function Landing() {
       <Actualites />
       <UpcomingEvents />
       <Footer />
-      <WhatsApp />
       <AIChatbot />  {/* ← AJOUTER */}
     </div>
   );
