@@ -25,3 +25,4 @@ export * from "./UpcomingEvents";
 export * from "./Valeurs";
 export * from "./WhatsApp";
 export * from "./AIChatbot";
+export { Actualites } from "./Actualites";

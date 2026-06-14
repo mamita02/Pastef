@@ -1,16 +1,6 @@
 import { COLORS } from "@/lib/constants/colors";
 import { motion } from "framer-motion";
-
-const FEATURED = {
-  day: "15",
-  month: "JUIN",
-  year: "2026",
-  title: "FORUM NATIONAL\nDE LA JEUNESSE",
-  subtitle: "Pour une jeunesse engagée et souveraine",
-  location: "Dakar Arena",
-  time: "09h00",
-  image: "/images/monument.png",
-};
+import { useEffect, useRef } from "react";
 
 const EVENTS = [
   {
@@ -49,17 +39,45 @@ const EVENTS = [
 ];
 
 export function UpcomingEvents() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // ── Démarrer la vidéo quand la section entre dans le viewport ──
+  useEffect(() => {
+    const vid = videoRef.current;
+    const sec = sectionRef.current;
+    if (!vid || !sec) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            vid.play().catch(() => {
+              /* navigateur peut bloquer l'autoplay */
+            });
+          } else {
+            vid.pause();
+          }
+        });
+      },
+      { threshold: 0.25 },
+    );
+
+    io.observe(sec);
+    return () => io.disconnect();
+  }, []);
+
   return (
     <section
+      ref={sectionRef}
       id="evenements"
       style={{
-        paddingTop: 100,
         background: "#fff",
         fontFamily: "'Outfit','Inter',-apple-system,sans-serif",
       }}
     >
       {/* ══════════════════════════════════════════════
-          HERO PLEINE LARGEUR — même approche que Hero.tsx
+          HERO PLEINE LARGEUR — vidéo en arrière-plan
       ══════════════════════════════════════════════ */}
       <div
         style={{
@@ -67,26 +85,52 @@ export function UpcomingEvents() {
           width: "100%",
           minHeight: 520,
           marginBottom: 72,
-          backgroundImage: `
-            linear-gradient(90deg,
+          overflow: "hidden",
+        }}
+      >
+        {/* ── Vidéo de fond ── */}
+        <video
+          ref={videoRef}
+          src="/images/Film.mp4"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: "right center",
+            zIndex: 0,
+          }}
+        />
+
+        {/* ── Overlay dégradé blanc (transparence côté droit, opaque à gauche) ── */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: `linear-gradient(90deg,
               rgba(255,255,255,1) 0%,
               rgba(255,255,255,1) 35%,
               rgba(255,255,255,0.8) 48%,
               rgba(255,255,255,0.3) 60%,
               rgba(255,255,255,0) 72%
-            ),
-            url('${FEATURED.image}')
-          `,
-          backgroundSize: "cover",
-          backgroundPosition: "right center",
-          backgroundRepeat: "no-repeat",
-        }}
-      >
+            )`,
+            zIndex: 1,
+            pointerEvents: "none",
+          }}
+        />
 
-        {/* Contenu texte (centré dans un max-width) */}
+        {/* ── Contenu texte ── */}
         <div
           className="events-hero-grid"
           style={{
+            position: "relative",
+            zIndex: 2,
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
             gap: 48,
@@ -97,7 +141,6 @@ export function UpcomingEvents() {
             margin: "0 auto",
           }}
         >
-          {/* ── Gauche : Titre ── */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -158,17 +201,13 @@ export function UpcomingEvents() {
               <span style={{ marginLeft: 4 }}>›</span>
             </motion.button>
           </motion.div>
-
-          {/* ── Droite : Infos Événement Phare ── */}
-          
         </div>
       </div>
 
       {/* ══════════════════════════════════════════════
-          CONTENU EN DESSOUS (centré)
+          CONTENU EN DESSOUS
       ══════════════════════════════════════════════ */}
       <div style={{ maxWidth: 1300, margin: "0 auto", padding: "0 32px" }}>
-        {/* Séparateur */}
         <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 48 }}>
           <div style={{ flex: 1, height: 1, background: "#E5E7EB" }} />
           <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#888", whiteSpace: "nowrap" }}>
@@ -177,7 +216,6 @@ export function UpcomingEvents() {
           <div style={{ flex: 1, height: 1, background: "#E5E7EB" }} />
         </div>
 
-        {/* Grille 3 événements */}
         <div className="events-cards-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24, marginBottom: 48 }}>
           {EVENTS.map((evt, i) => (
             <motion.div
@@ -230,7 +268,6 @@ export function UpcomingEvents() {
           ))}
         </div>
 
-        {/* Bannière notifications */}
         <motion.div
           className="events-notif-bar"
           initial={{ opacity: 0, y: 20 }}
@@ -283,7 +320,6 @@ export function UpcomingEvents() {
         </motion.div>
       </div>
 
-      {/* Responsive */}
       <style>{`
         @media (max-width: 900px) {
           .events-hero-grid { grid-template-columns: 1fr !important; }

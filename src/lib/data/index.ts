@@ -11,3 +11,4 @@ export * from "./piliers";
 export * from "./valeurs";
 export * from "./patriotes";
 export * from "./martyrs";
+

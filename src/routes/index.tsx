@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
+
 import {
   AIChatbot,
-  Classement,
+  Actualites,
   Footer,
   Hero,
   Martyrs,
@@ -77,7 +78,7 @@ function Landing() {
       <Piliers />
       <Valeurs />
       <Martyrs />
-      <Classement />
+      <Actualites />
       <UpcomingEvents />
       <Footer />
       <WhatsApp />

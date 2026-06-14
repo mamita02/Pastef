@@ -49,9 +49,9 @@ const VALID_PATRIOTES: AuthUser[] = [
     engagement: 87,
   },
   {
-    phone: "765432109",
-    card: "PASTEF-2026-005678",
-    nom: "Fatou Sow",
+    phone: "782950135",
+    card: "PASTEF-2026-050102",
+    nom: "Mamita",
     fonction: "Patriote · Mentor Académie",
     region: "Thiès",
     avatar: "FS",

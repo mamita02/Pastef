@@ -1,6 +1,6 @@
+import { motion } from "framer-motion";
 import { COLORS } from "@/lib/constants/colors";
 import type { Patriote } from "@/lib/data/patriotes";
-import { motion } from "framer-motion";
 
 /**
  * ═══════════════════════════════════════════════════════════════
@@ -8,19 +8,11 @@ import { motion } from "framer-motion";
  * ═══════════════════════════════════════════════════════════════
  *
  *  Carte affichée dans le carrousel "Top Patriotes" (Classement.tsx).
- *  Isolée ici pour pouvoir être réutilisée dans :
- *   • la future page /classement (vue complète)
- *   • la future page profil d'un patriote
- *   • le tableau de bord administrateur
+ *  Design "premium" : photo en haut, infos structurées en bas,
+ *  bande de motifs sénégalais sur le côté droit.
  *
- *  Effets visuels :
- *   • Bande verticale gauche aux motifs traditionnels sénégalais
- *     (pattern-sn.png + mixBlendMode pour effacer le fond blanc)
- *   • Hover : translation vers le haut + halo coloré + bordure verte
- *   • Barre d'engagement animée à l'apparition (whileInView)
- *   • Badge drapeau positionné en absolu sur le médaillon
- *
- *  ⚠️  Dépendance asset : /public/images/pattern-sn.png
+ *  Largeur : 320px (≈ 6 cartes par écran sur desktop 1920px,
+ *  4 par écran sur laptop 1440px).
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -29,174 +21,218 @@ type PatrioteCardProps = {
 };
 
 export function PatrioteCard({ p }: PatrioteCardProps) {
+  const isTop3 = (p.classement ?? 99) <= 3;
+
   return (
     <div
       style={{
-        flex: "0 0 240px",
+         width: 400,           // ← largeur fixe explicite
+         flexShrink: 0,
         background: COLORS.blanc,
         border: `1px solid ${COLORS.ligne}`,
-        borderRadius: 18,
-        // padding-left élargi pour laisser respirer la bande de motifs
-        padding: "22px 22px 22px 44px",
-        boxShadow: "0 4px 16px rgba(0,0,0,0.04)",
-        transition: "all 0.3s",
-        // Indispensables pour positionner la bande de motifs en absolu
-        position: "relative",
+        borderRadius: 20,
         overflow: "hidden",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
+        transition: "transform 0.3s, box-shadow 0.3s, border-color 0.3s",
+        position: "relative",
+        cursor: "pointer",
       }}
-      // Effets de hover gérés en JS pour permettre des transitions
-      // multi-propriétés (transform + bordure + ombre) synchronisées.
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = "translateY(-8px)";
         e.currentTarget.style.borderColor = COLORS.vert;
-        e.currentTarget.style.boxShadow = `0 20px 40px ${COLORS.vert}22`;
+        e.currentTarget.style.boxShadow = `0 24px 50px ${COLORS.vert}22`;
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = "translateY(0)";
         e.currentTarget.style.borderColor = COLORS.ligne;
-        e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.04)";
+        e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.05)";
       }}
     >
-      {/* ═══ Bande de motifs sénégalais (gauche) ═══ */}
+      {/* ═══ EN-TÊTE — Photo + badge classement ═══ */}
       <div
         style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          bottom: 0,
-          width: 28,
-          backgroundImage: "url(/images/pattern-sn.png)",
-          backgroundRepeat: "repeat-y",
-          backgroundSize: "28px auto",
-          backgroundPosition: "center top",
-          mixBlendMode: "multiply", // efface le fond blanc du PNG
-          zIndex: 0,
-          pointerEvents: "none",
+          position: "relative",
+          height: 180,
+          background: `linear-gradient(135deg, ${COLORS.vert} 0%, ${COLORS.vertClair} 100%)`,
+          overflow: "hidden",
         }}
-        aria-hidden="true"
-      />
-
-      {/* ═══ Fin trait dégradé pour séparer la bande du contenu ═══ */}
-      <div
-        style={{
-          position: "absolute",
-          top: 14,
-          bottom: 14,
-          left: 32,
-          width: 1,
-          background: `linear-gradient(180deg, transparent 0%, ${COLORS.ligne} 20%, ${COLORS.ligne} 80%, transparent 100%)`,
-          zIndex: 0,
-          pointerEvents: "none",
-        }}
-        aria-hidden="true"
-      />
-
-      {/* ═══ Contenu de la carte ═══ */}
-      <div style={{ position: "relative", zIndex: 1 }}>
-        {/* ─── En-tête : médaillon + identité ─── */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 14,
-            marginBottom: 16,
-          }}
-        >
+      >
+        {/* Photo de fond — si URL, sinon initiales */}
+        {p.photo && p.photo.startsWith("http") ? (
+          <img
+            src={p.photo}
+            alt={p.name}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
+        ) : (
           <div
             style={{
-              width: 54,
-              height: 54,
-              borderRadius: 14,
-              background: `linear-gradient(135deg, ${COLORS.vert}, ${COLORS.vertClair})`,
+              width: "100%",
+              height: "100%",
               display: "grid",
               placeItems: "center",
               color: "#fff",
+              fontSize: 56,
               fontWeight: 900,
-              fontSize: 16,
-              position: "relative",
-              boxShadow: `0 8px 22px ${COLORS.vert}44`,
-              flexShrink: 0,
+              letterSpacing: -2,
+              opacity: 0.95,
             }}
           >
             {p.photo}
-            {/* Badge drapeau (SN ou diaspora) */}
-            <span
-              style={{
-                position: "absolute",
-                top: -6,
-                right: -6,
-                fontSize: 18,
-                background: COLORS.blanc,
-                borderRadius: "50%",
-                padding: 2,
-                border: `1px solid ${COLORS.ligne}`,
-              }}
-            >
-              {p.flag}
-            </span>
           </div>
+        )}
 
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div
-              style={{
-                color: COLORS.noir,
-                fontWeight: 900,
-                fontSize: 14,
-                lineHeight: 1.2,
-              }}
-            >
-              {p.name}
-            </div>
-            <div
-              style={{
-                color: "#666",
-                fontSize: 11,
-                marginTop: 2,
-                fontWeight: 600,
-              }}
-            >
-              {p.fonction}
-            </div>
-          </div>
-        </div>
-
-        {/* ─── Localisation ─── */}
+        {/* Overlay dégradé pour la lisibilité */}
         <div
           style={{
-            color: "#666",
-            fontSize: 12,
-            marginBottom: 14,
-            fontWeight: 600,
+            position: "absolute",
+            inset: 0,
+            background: "linear-gradient(to bottom, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.4) 100%)",
+            pointerEvents: "none",
           }}
-        >
-          📍 {p.region}
-        </div>
+        />
 
-        {/* ─── Montant de contribution ─── */}
+        {/* Bande de motifs sénégalais sur le bord droit */}
         <div
           style={{
-            background: COLORS.creme,
-            borderRadius: 10,
-            padding: 10,
-            marginBottom: 12,
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            width: 28,
+            backgroundImage: "url(/images/pattern-sn.png)",
+            backgroundSize: "28px auto",
+            backgroundRepeat: "repeat-y",
+            opacity: 0.85,
+            mixBlendMode: "screen",
+            pointerEvents: "none",
           }}
-        >
+          aria-hidden="true"
+        />
+
+        {/* Badge classement (top-left) */}
+        {p.classement && (
           <div
             style={{
-              color: "#888",
-              fontSize: 10,
+              position: "absolute",
+              top: 14,
+              left: 14,
+              padding: "6px 12px",
+              background: isTop3 ? "#FFD700" : "rgba(255,255,255,0.95)",
+              color: isTop3 ? "#000" : COLORS.noir,
+              borderRadius: 8,
+              fontSize: 11,
+              fontWeight: 900,
+              letterSpacing: 0.5,
+              boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+              display: "flex",
+              alignItems: "center",
+              gap: 4,
+            }}
+          >
+            {isTop3 && <span style={{ fontSize: 12 }}>🏆</span>}
+            #{p.classement}
+          </div>
+        )}
+
+        {/* Drapeau (top-right, devant la bande de motifs) */}
+        <div
+          style={{
+            position: "absolute",
+            top: 14,
+            right: 50,
+            width: 32,
+            height: 32,
+            borderRadius: "50%",
+            background: "rgba(255,255,255,0.95)",
+            display: "grid",
+            placeItems: "center",
+            fontSize: 16,
+            boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+          }}
+        >
+          {p.flag}
+        </div>
+      </div>
+
+      {/* ═══ CORPS — Identité + données ═══ */}
+      <div style={{ padding: "18px 20px 20px" }}>
+        {/* Nom + fonction */}
+        <h3
+          style={{
+            color: COLORS.noir,
+            fontWeight: 900,
+            fontSize: 17,
+            margin: 0,
+            lineHeight: 1.2,
+            letterSpacing: -0.3,
+          }}
+        >
+          {p.name}
+        </h3>
+        <div
+          style={{
+            color: COLORS.vert,
+            fontSize: 12,
+            marginTop: 4,
+            fontWeight: 700,
+            letterSpacing: 0.3,
+          }}
+        >
+          {p.fonction}
+        </div>
+
+        {/* Localisation */}
+        <div
+          style={{
+            color: "#888",
+            fontSize: 12,
+            marginTop: 8,
+            display: "flex",
+            alignItems: "center",
+            gap: 5,
+            fontWeight: 500,
+          }}
+        >
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+          {p.region}
+        </div>
+
+        {/* Séparateur */}
+        <div style={{ height: 1, background: COLORS.ligne, margin: "14px 0" }} />
+
+        {/* Contribution */}
+        <div style={{ marginBottom: 14 }}>
+          <div
+            style={{
+              color: "#999",
+              fontSize: 9,
               letterSpacing: 1.5,
-              fontWeight: 700,
+              fontWeight: 800,
+              marginBottom: 4,
             }}
           >
             CONTRIBUTION
           </div>
-          <div style={{ color: COLORS.vert, fontWeight: 900, fontSize: 18 }}>
-            {p.contribution} FCFA
+          <div
+            style={{
+              color: COLORS.noir,
+              fontWeight: 900,
+              fontSize: 20,
+              letterSpacing: -0.5,
+            }}
+          >
+            {p.contribution}{" "}
+            <span style={{ fontSize: 11, color: "#999", fontWeight: 700, letterSpacing: 0.5 }}>
+              FCFA
+            </span>
           </div>
         </div>
 
-        {/* ─── Barre d'engagement (animée à l'entrée du viewport) ─── */}
+        {/* Barre d'engagement */}
         <div>
           <div
             style={{
@@ -212,7 +248,7 @@ export function PatrioteCard({ p }: PatrioteCardProps) {
             <span
               style={{
                 color: p.engagement >= 95 ? COLORS.vert : COLORS.rouge,
-                fontWeight: 800,
+                fontWeight: 900,
               }}
             >
               {p.engagement}%
@@ -220,9 +256,9 @@ export function PatrioteCard({ p }: PatrioteCardProps) {
           </div>
           <div
             style={{
-              height: 5,
+              height: 6,
               background: COLORS.ligne,
-              borderRadius: 3,
+              borderRadius: 4,
               overflow: "hidden",
             }}
           >
@@ -230,14 +266,14 @@ export function PatrioteCard({ p }: PatrioteCardProps) {
               initial={{ width: 0 }}
               whileInView={{ width: `${p.engagement}%` }}
               viewport={{ once: true }}
-              transition={{ duration: 1.2 }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
               style={{
                 height: "100%",
                 background:
                   p.engagement >= 95
                     ? `linear-gradient(90deg, ${COLORS.vert}, ${COLORS.vertClair})`
-                    : COLORS.rouge,
-                borderRadius: 3,
+                    : `linear-gradient(90deg, ${COLORS.rouge}, ${COLORS.rougeClair})`,
+                borderRadius: 4,
               }}
             />
           </div>

@@ -5,45 +5,48 @@ import { COLORS } from "@/lib/constants/colors";
 
 /**
  * ═══════════════════════════════════════════════════════════════
- *  AIChatbot — Assistant IA PASTEF (prototype visuel)
+ *  AIChatbot — Assistant IA PASTEF
  * ═══════════════════════════════════════════════════════════════
  *
- *  FAB en bas à GAUCHE (WhatsApp est déjà à droite). S'ouvre en
- *  panneau de chat avec :
- *   - Header avatar IA + status "En ligne"
- *   - Bulles de message animées
- *   - Effet "typing" (3 points) puis streaming texte lettre par lettre
- *   - Questions suggérées (chips cliquables)
- *   - Input + bouton envoyer
+ *  Identité : couleurs Sénégal (vert/rouge) + pattern ethnique
+ *  utilisé directement comme image de background :
+ *   1. Dans le cercle FAB (background plein)
+ *   2. Dans le header du panneau (background + overlay sombre)
  *
- *  ⚠️ PROTOTYPE — Aucune vraie IA derrière. Les réponses sont
- *  matchées par mots-clés sur une table locale. À remplacer par
- *  un appel API (Claude / OpenAI / Mistral) en production.
+ *  POSITION : FAB côte à côte avec WhatsApp en bas à droite
+ *   - WhatsApp à right: 28, bottom: 28 (largeur 60px)
+ *   - AI à right: 100, bottom: 28 (à gauche immédiate)
+ *   - Panneau ouvert à right: 28, bottom: 100
+ *
+ *  ⚠️ PROTOTYPE — Réponses par mots-clés.
  * ═══════════════════════════════════════════════════════════════
  */
+
+// ─── Chemin de l'image du pattern (ajuste selon ton arbo /public) ───
+const PATTERN_URL = "/images/pattern-sn2.png";
+
+// ─── Couleurs identitaires Sénégal / PASTEF ───
+const SN_GREEN = "#1B8B3A";
+const SN_RED = "#C8102E";
+
+// ─── Dimensions FAB (constantes au niveau module, hors composant) ───
+const FAB_SIZE = 52;
+const FAB_RIGHT = 28 + 60 + 12; // = 100 (28 marge + 60 WhatsApp + 12 gap)
 
 type Message = {
   id: string;
   role: "ai" | "user";
   text: string;
-  streaming?: boolean; // true = en cours d'écriture (pour effet typing)
+  streaming?: boolean;
 };
 
-// ─── Couleurs IA (distinctes des couleurs PASTEF identitaires) ───
-const AI_GRADIENT = "linear-gradient(135deg, #7C3AED 0%, #06B6D4 100%)";
-const AI_PURPLE = "#7C3AED";
-const AI_CYAN = "#06B6D4";
-
-// ─── Suggestions de démarrage ───
 const STARTER_QUESTIONS = [
   "Comment rejoindre PASTEF ?",
   "Quels sont les 4 piliers ?",
-  "Comment contribuer financièrement ?",
-  "Voir les offres Talents",
+  "Comment contribuer ?",
+  "Offres Talents",
 ];
 
-// ─── Base de connaissances (matching par mots-clés) ───
-// Format simple : si un des keywords matche dans la question, on renvoie la réponse.
 const KNOWLEDGE_BASE: Array<{ keywords: string[]; answer: string; followups?: string[] }> = [
   {
     keywords: ["rejoindre", "adhérer", "adhesion", "inscrire", "inscription", "membre"],
@@ -100,12 +103,11 @@ const KNOWLEDGE_BASE: Array<{ keywords: string[]; answer: string; followups?: st
     followups: STARTER_QUESTIONS.slice(0, 3),
   },
   {
-    keywords: ["merci", "merci beaucoup", "djerejef"],
+    keywords: ["merci", "djerejef"],
     answer: "Djerejef ! 🙏 N'hésitez pas si vous avez d'autres questions. Bonne continuation patriote !",
   },
 ];
 
-// ─── Recherche dans la base ───
 function findAnswer(question: string): { answer: string; followups?: string[] } {
   const q = question.toLowerCase();
   for (const entry of KNOWLEDGE_BASE) {
@@ -113,7 +115,6 @@ function findAnswer(question: string): { answer: string; followups?: string[] } 
       return { answer: entry.answer, followups: entry.followups };
     }
   }
-  // Fallback générique si rien ne matche
   return {
     answer:
       "Hmm, je ne suis pas encore formé sur ce sujet précis. Mais je peux vous aider sur : l'adhésion, les 4 piliers, les contributions, les offres Talents, l'Académie, le codéveloppement diaspora et la vie du parti. Reformulez ou choisissez une suggestion ci-dessous.",
@@ -137,14 +138,12 @@ export function AIChatbot() {
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll vers le bas à chaque nouveau message
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
 
-  // ─── Envoi d'un message utilisateur + simulation réponse IA ───
   const sendMessage = (text: string) => {
     if (!text.trim() || isTyping) return;
 
@@ -158,20 +157,17 @@ export function AIChatbot() {
     setCurrentFollowups([]);
     setIsTyping(true);
 
-    // Délai "réfléchit" entre 600-1200ms pour un effet réaliste
     const thinkingDelay = 600 + Math.random() * 600;
     setTimeout(() => {
       const { answer, followups } = findAnswer(text);
       const aiMsgId = `ai-${Date.now()}`;
 
-      // On insère un message vide qu'on remplit lettre par lettre (streaming)
       setMessages((prev) => [
         ...prev,
         { id: aiMsgId, role: "ai", text: "", streaming: true },
       ]);
       setIsTyping(false);
 
-      // Streaming caractère par caractère (15ms par caractère)
       let i = 0;
       const interval = setInterval(() => {
         i++;
@@ -192,7 +188,7 @@ export function AIChatbot() {
 
   return (
     <>
-      {/* ═══ FAB (Floating Action Button) ═══ */}
+      {/* ═══ FAB AI — à gauche de WhatsApp ═══ */}
       <motion.button
         onClick={() => setOpen(!open)}
         initial={{ scale: 0 }}
@@ -203,38 +199,57 @@ export function AIChatbot() {
         style={{
           position: "fixed",
           bottom: 28,
-          left: 28,
-          width: 60,
-          height: 60,
+          right: FAB_RIGHT,
+          width: FAB_SIZE,
+          height: FAB_SIZE,
           borderRadius: "50%",
-          background: AI_GRADIENT,
+          backgroundImage: `url(${PATTERN_URL})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
           display: "grid",
           placeItems: "center",
-          boxShadow: "0 8px 32px rgba(124,58,237,0.5)",
+          boxShadow: `0 8px 28px ${SN_GREEN}66`,
           zIndex: 99,
           cursor: "pointer",
-          border: "none",
+          border: `2px solid ${SN_GREEN}`,
+          padding: 0,
+          overflow: "hidden",
         }}
         aria-label="Ouvrir l'assistant IA"
       >
-        {/* Pulse ring animé pour signaler "IA active" */}
+        {/* Pulse ring vert */}
         <motion.div
-          animate={{ scale: [1, 1.4, 1], opacity: [0.6, 0, 0.6] }}
+          animate={{ scale: [1, 1.4, 1], opacity: [0.5, 0, 0.5] }}
           transition={{ duration: 2, repeat: Infinity }}
           style={{
             position: "absolute",
             inset: 0,
             borderRadius: "50%",
-            background: AI_GRADIENT,
+            background: SN_GREEN,
             zIndex: -1,
           }}
         />
-        {/* Icône IA — étoile à 4 branches stylisée */}
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff">
-          <path d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z" />
-          <circle cx="19" cy="5" r="1.5" />
-          <circle cx="5" cy="19" r="1.5" />
-        </svg>
+
+        {/* Disque central blanc translucide pour faire ressortir l'icône */}
+        <div
+          style={{
+            position: "relative",
+            width: FAB_SIZE * 0.58,
+            height: FAB_SIZE * 0.58,
+            borderRadius: "50%",
+            background: "rgba(255,255,255,0.92)",
+            display: "grid",
+            placeItems: "center",
+            boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+          }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill={SN_GREEN}>
+            <path d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z" />
+            <circle cx="19" cy="5" r="1.3" />
+            <circle cx="5" cy="19" r="1.3" />
+          </svg>
+        </div>
       </motion.button>
 
       {/* ═══ Panneau de chat ═══ */}
@@ -247,8 +262,8 @@ export function AIChatbot() {
             transition={{ duration: 0.2 }}
             style={{
               position: "fixed",
-              bottom: 100,
-              left: 28,
+              bottom: 100, // au-dessus des FAB
+              right: 28,
               width: "min(380px, calc(100vw - 56px))",
               height: "min(560px, calc(100vh - 140px))",
               background: COLORS.blanc,
@@ -262,70 +277,113 @@ export function AIChatbot() {
                 "'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
             }}
           >
-            {/* ─── Header ─── */}
+            {/* ─── Header avec pattern + overlay sombre ─── */}
             <div
               style={{
-                background: AI_GRADIENT,
-                padding: "16px 20px",
+                position: "relative",
+                padding: "14px 18px",
                 display: "flex",
                 alignItems: "center",
                 gap: 12,
                 color: "#fff",
+                backgroundImage: `url(${PATTERN_URL})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
               }}
             >
               <div
                 style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: "50%",
-                  background: "rgba(255,255,255,0.2)",
-                  display: "grid",
-                  placeItems: "center",
-                  backdropFilter: "blur(10px)",
+                  position: "absolute",
+                  inset: 0,
+                  background: "rgba(0,0,0,0.55)",
+                  pointerEvents: "none",
                 }}
-              >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff">
-                  <path d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z" />
-                </svg>
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 700, fontSize: 15 }}>Assistant PASTEF</div>
-                <div style={{ fontSize: 12, opacity: 0.9, display: "flex", alignItems: "center", gap: 6 }}>
-                  <motion.span
-                    animate={{ opacity: [1, 0.4, 1] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                    style={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: "50%",
-                      background: "#22C55E",
-                      display: "inline-block",
-                    }}
-                  />
-                  IA propulsée • En ligne
-                </div>
-              </div>
-              <button
-                onClick={() => setOpen(false)}
+              />
+
+              <div
                 style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: "50%",
-                  background: "rgba(255,255,255,0.15)",
-                  border: "none",
-                  color: "#fff",
-                  cursor: "pointer",
-                  fontSize: 18,
-                  display: "grid",
-                  placeItems: "center",
+                  position: "relative",
+                  zIndex: 1,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  width: "100%",
                 }}
-                aria-label="Fermer"
               >
-                ✕
-              </button>
+                <div
+                  style={{
+                    width: 38,
+                    height: 38,
+                    borderRadius: "50%",
+                    background: "rgba(255,255,255,0.25)",
+                    display: "grid",
+                    placeItems: "center",
+                    backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(255,255,255,0.4)",
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff">
+                    <path d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z" />
+                  </svg>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div
+                    style={{
+                      fontWeight: 700,
+                      fontSize: 15,
+                      textShadow: "0 1px 3px rgba(0,0,0,0.5)",
+                    }}
+                  >
+                    Assistant PASTEF
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 12,
+                      opacity: 0.95,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      textShadow: "0 1px 3px rgba(0,0,0,0.5)",
+                    }}
+                  >
+                    <motion.span
+                      animate={{ opacity: [1, 0.4, 1] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                      style={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: "50%",
+                        background: "#22C55E",
+                        display: "inline-block",
+                        boxShadow: "0 0 6px #22C55E",
+                      }}
+                    />
+                    IA propulsée • En ligne
+                  </div>
+                </div>
+                <button
+                  onClick={() => setOpen(false)}
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: "50%",
+                    background: "rgba(255,255,255,0.2)",
+                    border: "1px solid rgba(255,255,255,0.3)",
+                    color: "#fff",
+                    cursor: "pointer",
+                    fontSize: 16,
+                    display: "grid",
+                    placeItems: "center",
+                  }}
+                  aria-label="Fermer"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
 
-            {/* ─── Zone de messages ─── */}
+            {/* ─── Zone messages ─── */}
             <div
               ref={scrollRef}
               style={{
@@ -342,7 +400,6 @@ export function AIChatbot() {
                 <MessageBubble key={msg.id} message={msg} />
               ))}
 
-              {/* Indicateur "en train d'écrire" */}
               {isTyping && (
                 <motion.div
                   initial={{ opacity: 0, y: 5 }}
@@ -373,7 +430,7 @@ export function AIChatbot() {
                           width: 7,
                           height: 7,
                           borderRadius: "50%",
-                          background: AI_PURPLE,
+                          background: SN_GREEN,
                         }}
                       />
                     ))}
@@ -382,7 +439,7 @@ export function AIChatbot() {
               )}
             </div>
 
-            {/* ─── Suggestions (chips) ─── */}
+            {/* ─── Suggestions ─── */}
             {currentFollowups.length > 0 && !isTyping && (
               <div
                 style={{
@@ -405,8 +462,8 @@ export function AIChatbot() {
                       padding: "6px 12px",
                       borderRadius: 999,
                       background: COLORS.blanc,
-                      border: `1px solid ${AI_PURPLE}40`,
-                      color: AI_PURPLE,
+                      border: `1px solid ${SN_GREEN}55`,
+                      color: SN_GREEN,
                       fontSize: 12,
                       fontWeight: 600,
                       cursor: "pointer",
@@ -454,7 +511,7 @@ export function AIChatbot() {
                   width: 40,
                   height: 40,
                   borderRadius: "50%",
-                  background: input.trim() && !isTyping ? AI_GRADIENT : COLORS.ligne,
+                  background: input.trim() && !isTyping ? SN_GREEN : COLORS.ligne,
                   border: "none",
                   cursor: input.trim() && !isTyping ? "pointer" : "not-allowed",
                   display: "grid",
@@ -469,7 +526,7 @@ export function AIChatbot() {
               </motion.button>
             </div>
 
-            {/* ─── Footer mini-disclaimer ─── */}
+            {/* ─── Footer ─── */}
             <div
               style={{
                 padding: "6px 12px 10px",
@@ -488,7 +545,7 @@ export function AIChatbot() {
   );
 }
 
-// ─── Composant bulle de message ───
+// ─── Bulle de message ───
 function MessageBubble({ message }: { message: Message }) {
   const isAi = message.role === "ai";
   return (
@@ -503,18 +560,19 @@ function MessageBubble({ message }: { message: Message }) {
     >
       <div
         style={{
-          background: isAi ? COLORS.blanc : AI_GRADIENT,
+          background: isAi ? COLORS.blanc : SN_GREEN,
           color: isAi ? COLORS.noir : "#fff",
           padding: "10px 14px",
           borderRadius: isAi ? "16px 16px 16px 4px" : "16px 16px 4px 16px",
           fontSize: 14,
           lineHeight: 1.5,
           whiteSpace: "pre-wrap",
-          boxShadow: isAi ? "0 2px 8px rgba(0,0,0,0.05)" : "0 4px 16px rgba(124,58,237,0.3)",
+          boxShadow: isAi
+            ? "0 2px 8px rgba(0,0,0,0.05)"
+            : `0 4px 16px ${SN_GREEN}40`,
         }}
       >
         {message.text}
-        {/* Curseur clignotant pendant le streaming */}
         {message.streaming && (
           <motion.span
             animate={{ opacity: [1, 0, 1] }}
@@ -523,7 +581,7 @@ function MessageBubble({ message }: { message: Message }) {
               display: "inline-block",
               width: 2,
               height: 14,
-              background: AI_PURPLE,
+              background: SN_GREEN,
               marginLeft: 2,
               verticalAlign: "middle",
             }}

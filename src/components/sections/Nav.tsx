@@ -38,7 +38,7 @@ export function Nav({ scrolled: _scrolled }: NavProps) {
     { label: "Accueil", href: "#accueil" },
     { label: "Président", href: "#president" },
     { label: "Martyrs", href: "#martyrs" },
-    { label: "Classement", href: "#classement" },
+    { label: "Actualites", href: "#Actualites" },
   ];
 
   return (
