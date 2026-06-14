@@ -53,7 +53,7 @@ export const PATRIOTES: Patriote[] = [
     flag: "🌍",
     contribution: "4 200 000",
     engagement: 99,
-    photo: "MK",
+    photo: "/images/elmalik.jpg",
     classement: 2,
     slogan: "La diaspora au service de la nation.",
     oeuvre:
